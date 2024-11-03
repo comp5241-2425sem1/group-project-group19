@@ -149,8 +149,28 @@
                     layerSpacing: 50
                 }),
                 initialContentAlignment: go.Spot.Center,
-                "animationManager.isEnabled": false
+                "animationManager.isEnabled": false,
+
+                "ViewportBoundsChanged": function (e) {
+                    // update the zoom slider when the view changes
+                    const zoomSlider = document.getElementById("zoomSlider");
+                    if (zoomSlider) {
+                        //convert the current scale value to percentage
+                        const zoomPercentage = Math.round(diagram.scale * 100);
+                        zoomSlider.value = zoomPercentage;
+                        zoomValue.textContent = zoomPercentage + "%";
+                        //update the zoom display text
+                        const zoomText = document.getElementById("zoomText");
+                        if (zoomText) {
+                            zoomText.textContent = zoomPercentage + "%";
+                        }
+                    }
+                }
             });
+
+
+
+
 
             diagram.nodeTemplate =
                 $(go.Node, "Auto",
@@ -240,101 +260,101 @@
             zoomValue.textContent = zoomPercentage + '%';
         });
 
-// Save image
-saveButton.addEventListener('click', async function() {
-        // Save current view state
-        const currentScale = diagram.scale;
-        const currentPosition = diagram.position.copy();
+        // Save image
+        saveButton.addEventListener('click', async function () {
+            // Save current view state
+            const currentScale = diagram.scale;
+            const currentPosition = diagram.position.copy();
 
-        try {
-            // Ensure that all nodes are considered
-            diagram.zoomToFit();
-            await diagram.commitTransaction();
+            try {
+                // Ensure that all nodes are considered
+                diagram.zoomToFit();
+                await diagram.commitTransaction();
 
-            // Get the boundaries of all nodes
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            diagram.nodes.each(node => {
-                const bounds = node.actualBounds;
-                minX = Math.min(minX, bounds.x);
-                minY = Math.min(minY, bounds.y);
-                maxX = Math.max(maxX, bounds.x + bounds.width);
-                maxY = Math.max(maxY, bounds.y + bounds.height);
-               
-            });
-            console.log("minX: " + minX + " minY: " + minY + " maxX: " + maxX + " maxY: " + maxY);
+                // Get the boundaries of all nodes
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                diagram.nodes.each(node => {
+                    const bounds = node.actualBounds;
+                    minX = Math.min(minX, bounds.x);
+                    minY = Math.min(minY, bounds.y);
+                    maxX = Math.max(maxX, bounds.x + bounds.width);
+                    maxY = Math.max(maxY, bounds.y + bounds.height);
 
-            // Adding extra padding
-            const padding = 5;
-            minX -= padding;
-            minY -= padding;
-            maxX += padding;
-            maxY += padding;
+                });
+                console.log("minX: " + minX + " minY: " + minY + " maxX: " + maxX + " maxY: " + maxY);
 
-            // calculate overall size
-            const width = maxX - minX;
-            const height = maxY - minY;
+                // Adding extra padding
+                const padding = 5;
+                minX -= padding;
+                minY -= padding;
+                maxX += padding;
+                maxY += padding;
 
-            // set higher resolution
-            const scale = 2;
+                // calculate overall size
+                const width = maxX - minX;
+                const height = maxY - minY;
 
-            // Temporary adjustment of the diagram to ensure complete capture
-            diagram.scale = 1;
-            //console.log(new go.Point(minX, minY))
-            // create image data
-            const imageData = diagram.makeImageData({
-                scale: scale,
-                background: "white",
-                type: "image/png",
-                position: new go.Point(minX, minY),
-                size: new go.Size(width*2, height*2),
-                maxSize: new go.Size(width * scale, height * scale)
-            });
-           
+                // set higher resolution
+                const scale = 2;
 
-            // create download link
-            const now = new Date();
-            const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-            const filename = `mindmap_${timestamp}.png`;
+                // Temporary adjustment of the diagram to ensure complete capture
+                diagram.scale = 1;
+                //console.log(new go.Point(minX, minY))
+                // create image data
+                const imageData = diagram.makeImageData({
+                    scale: scale,
+                    background: "white",
+                    type: "image/png",
+                    position: new go.Point(minX, minY),
+                    size: new go.Size(width * 2, height * 2),
+                    maxSize: new go.Size(width * scale, height * scale)
+                });
 
-            // transform to Blob and download
-            const blob = dataURItoBlob(imageData);
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = url;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
 
-            // clean up URL object
-            setTimeout(() => {
-                window.URL.revokeObjectURL(url);
-            }, 100);
+                // create download link
+                const now = new Date();
+                const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                const filename = `mindmap_${timestamp}.png`;
 
-        } catch (e) {
-            console.error('Error saving image:', e);
-        } finally {
-            // restore original view state
-            diagram.scale = currentScale;
-            diagram.position = currentPosition;
-            diagram.commitTransaction();
+                // transform to Blob and download
+                const blob = dataURItoBlob(imageData);
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = url;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // clean up URL object
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+
+            } catch (e) {
+                console.error('Error saving image:', e);
+            } finally {
+                // restore original view state
+                diagram.scale = currentScale;
+                diagram.position = currentPosition;
+                diagram.commitTransaction();
+            }
+        });
+
+        // helper function: convert Data URI to Blob object
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+
+            return new Blob([ab], { type: mimeString });
         }
-    });
-
-    // helper function: convert Data URI to Blob object
-    function dataURItoBlob(dataURI) {
-        const byteString = atob(dataURI.split(',')[1]);
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        return new Blob([ab], {type: mimeString});
-    }
 
         textarea.addEventListener('input', updateDiagram);
         updateDiagram();
