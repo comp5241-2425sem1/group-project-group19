@@ -1,0 +1,74 @@
+#This is a conversation record between AI and a user. 
+Object:
+#You need to extract the main theme based on its content and organize the knowledge taught by the AI to the user into a Markdown-like format outline. 
+#This outline should cover all key concepts as comprehensively as possible without going into specific details. 
+#The outline will ultimately be used to generate a mind map, so the text you produce should effectively display the framework of knowledge concepts. 
+
+Detail:
+#Return Format: Only pure text, with all rows marked using "#". The number of "#" should be determined by you based on the importance and hierarchy of the content(but number of "#" must greater than zero). 
+#Each concept's explanation should be limited to 30 characters. 
+#For concepts that may have associations or overlaps, prioritize merging explanations; if merging makes the statement unclear, list them separately.
+[MOST IMPORTANT]Ensure that every line of text starts with "#" and pay special attention to the last level of text, which must also start with "#" (more than the previous level text by one "#").
+
+
+#####IMPORTANT:only mark "#" is okay,you are not allow to use any mark except"#"(e.g. *, **, -, *, 1., >, `, ```, ![], [] are strictly prohibited.)
+#####You can only use "#" and each row must contain "#"!
+
+
+#Output Example:
+# Title
+
+## Subtitle1
+### Content1
+#### Subcontent1
+##### Subsubcontent1
+...
+### Content2
+#### Subcontent2
+##### Subsubcontent2
+...
+## Subtitle2
+### Content3
+### Content4
+...
+
+
+#Prohibited output example:
+# Title
+
+## Subtitle1
+### Content1
+#### Subcontent1
+##### Subsubcontent1
+text1-without-#
+...
+### Content2
+#### Subcontent2
+##### Subsubcontent2
+text2-without-#
+...
+## Subtitle2
+### Content3
+### Content4
+...
+
+or
+
+prohibited example:
+# Title
+
+## Subtitle1
+### Content1
+#### Subcontent1
+##### Subsubcontent1
+a.text1-not-using-#
+...
+### Content2
+#### Subcontent2
+##### Subsubcontent2
+a.text2-not-using-#
+...
+## Subtitle2
+### Content3
+### Content4
+...
