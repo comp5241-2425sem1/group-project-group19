@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown2Mindmap</title>
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-    <script src="https://unpkg.com/gojs/release/go.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/3.0.13/go.js"></script>
     <style>
         * {
             margin: 0;
@@ -134,6 +134,7 @@
                     <span class="zoom-value" id="zoomValue">100%</span>
                 </div>
                 <button class="control-button" id="saveButton">Save as png</button>
+                <button class="control-button" id="refresh">Refresh Mindmap</button>
             </div>
         </div>
     </div>
@@ -243,6 +244,7 @@
         const zoomSlider = document.getElementById('zoomSlider');
         const zoomValue = document.getElementById('zoomValue');
         const saveButton = document.getElementById('saveButton');
+        const refresh = document.getElementById('refresh');
 
         function updateDiagram() {
             const mdText = textarea.value;
@@ -358,6 +360,22 @@
 
         textarea.addEventListener('input', updateDiagram);
         updateDiagram();
+
+        refresh.addEventListener('click', async function () {
+            // get result from backend and inject into textarea
+            refresh.disabled = true;
+            try {
+                const response = await fetch('/get_result');
+                const result = await response.text();
+                document.getElementById('markdownInput').value = result;
+
+                await updateDiagram();
+            } catch (error) {
+                console.error('Error fetching result:', error);
+            } finally {
+                refresh.disabled = false;
+            }
+        });
     </script>
 </body>
 
