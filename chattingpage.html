@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>GPT Chat Interface</title>
+  <style>
+    /* 整体容器样式 */
+ .chat-container {
+        width: 400px;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+      }
+
+    /* 聊天记录项样式 */
+ .chat-item {
+        margin-bottom: 10px;
+        padding: 5px;
+        border-radius: 5px;
+      }
+
+ .user {
+        background-color: #e6f7ff;
+        text-align: right;
+      }
+
+ .assistant {
+        background-color: #f2f2f2;
+        text-align: left;
+      }
+
+    /* 文件上传按钮样式 */
+ .upload-btn {
+        background-color: #007BFF;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+    /* 文件列表样式 */
+ .file-list {
+        display: none;
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        padding: 5px;
+        z-index: 1;
+      }
+
+    /* 文件列表项样式 */
+ .file-item {
+        cursor: pointer;
+        padding: 3px;
+      }
+
+ .file-item:hover {
+        background-color: #f0f0f0;
+      }
+  </style>
+</head>
+
+<body>
+  <div class="chat-container">
+    <!-- 聊天标题 -->
+    <h2>GPT Chat</h2>
+
+    <!-- 聊天记录容器 -->
+    <div id="chat-log"></div>
+
+    <!-- 用户输入框 -->
+    <input type="text" id="user-input" placeholder="Type your message here">
+    <!-- 发送按钮 -->
+    <button onclick="sendMessage()">Send</button>
+
+    <!-- 文件上传部分 -->
+    <div>
+      <button class="upload-btn" onmouseover="showFileList()">上传文件</button>
+      <div id="file-list" class="file-list">
+        <!-- 这里将通过 JavaScript 动态添加文件列表项 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 存储已上传文件列表（模拟数据，实际应用中应从后端获取）
+    const uploadedFiles = [];
+    // 当前选中的文件对象，用于记录用户在文件列表中选择的文件
+    let selectedFileObj = null;
+
+    // 函数用于向聊天记录容器中添加聊天记录项
+    function addChatItem(message, isUser) {
+      // 获取聊天记录容器元素
+      const chatLog = document.getElementById('chat-log');
+      // 创建一个新的聊天记录项 div 元素
+      const chatItem = document.createElement('div');
+      // 根据是否为用户消息添加相应的类名，用于样式区分
+      chatItem.classList.add('chat-item');
+      if (isUser) {
+        chatItem.classList.add('user');
+      } else {
+        chatItem.classList.add('assistant');
+      }
+      // 创建一个段落元素用于显示消息内容
+      const p = document.createElement('p');
+      p.textContent = message;
+      // 将段落元素添加到聊天记录项 div 元素中
+      chatItem.appendChild(p);
+      // 创建一个时间元素用于显示消息发送时间
+      const time = document.createElement('span');
+      time.classList.add('time');
+      time.textContent = new Date().toLocaleTimeString();
+      // 将时间元素添加到聊天记录项 div 元素中
+      chatItem.appendChild(time);
+      // 将聊天记录项 div 元素添加到聊天记录容器中
+      chatLog.appendChild(chatItem);
+    }
+
+    async function sendMessage() {
+      // 获取用户在输入框中输入的消息
+      var userMessage = document.getElementById('user-input').value;
+      // 将用户消息添加到聊天记录中，标记为用户发送
+      addChatItem(userMessage, true);
+
+      try {
+        // 构建系统提示，这里的系统提示内容与后端逻辑相关，用于指导后端回答问题
+        const systemPrompt = "You are a knowledgeable assistant. Based on the user's given topic, " +
+          "you should progressively expand the knowledge framework by asking questions " +
+          "and providing explanations. The knowledge framework should follow a hierarchical " +
+          "structure from broad concepts to detailed practical operations. For example:\n" +
+          "Topic A - Concept 1 - Practical steps a, b, c\n" +
+          "Topic A - Concept 2 - Practical steps a, b\n" +
+          "...\n" +
+          "Topic N - Concept k - Practical steps a, b, c\n" +
+          "Please provide a detailed and structured response.\n\n" +
+          "This is the document uploaded by the user. If the user asks about the document, " +
+          "answer any questions about the document. \n\nThe document:\n\n" +
+          // 获取选中的文件内容（假设在全局变量中存储），为后端提供文件相关信息
+          getSelectedFileContent() +
+          "\n\nNote: This is your history of the conversation with the user, don't forget to follow " +
+          "it up and continue answering the user's questions, chat history is as follows:\n" +
+          // 获取聊天历史（假设在全局变量中存储），为后端提供聊天历史信息
+          getChatHistory() +
+          "";
+
+        // 构建用户提示，包含用户输入的问题
+        const userPrompt = "User question:\n" + userMessage;
+
+        // 向后端接口发送 POST 请求，这里的接口地址需要替换为实际的后端接口地址
+        const response = await fetch('http://localhost:8501/answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ systemPrompt: systemPrompt, userPrompt: userPrompt })
+        });
+
+        // 解析后端返回的 JSON 数据
+        const data = await response.json();
+        // 从解析后的数据中获取回答内容，假设后端返回的数据结构中有一个'response' 字段包含回答
+        const assistantResponse = data.response;
+
+        // 将后端返回的回答添加到聊天记录中，标记为助手回复
+        addAssistantResponse(assistantResponse);
+      } catch (error) {
+        console.error('Error fetching response:', error);
+        // 如果获取回答出错，添加错误消息到聊天记录中
+        addChatItem('Error fetching response. Please try again later.', false);
+      }
+
+      // 清空用户输入框，准备下一次输入
+      document.getElementById('user-input').value = "";
+    }
+
+    function addAssistantResponse(response) {
+      addChatItem(response, false);
+    }
+
+    // 显示文件列表
+    function showFileList() {
+      // 获取文件列表容器元素
+      const fileList = document.getElementById('file-list');
+      // 清空文件列表容器内容
+      fileList.innerHTML = "";
+      // 遍历已上传文件列表
+      uploadedFiles.forEach((file) => {
+        // 创建一个文件列表项 div 元素
+        const fileItem = document.createElement('div');
+        // 添加文件列表项样式类
+        fileItem.classList.add('file-item');
+        // 设置文件列表项显示的文件名
+        fileItem.textContent = file.name;
+        // 为文件列表项添加点击事件处理函数
+        fileItem.onclick = function () {
+          // 处理文件选择操作
+          selectFile(file);
+        };
+        // 将文件列表项添加到文件列表容器中
+        fileList.appendChild(fileItem);
+      });
+      // 显示文件列表
+      fileList.style.display = "block";
+    }
+
+    // 隐藏文件列表
+    window.onmouseleave = function () {
+      // 获取文件列表容器元素
+      const fileList = document.getElementById('file-list');
+      // 隐藏文件列表
+      fileList.style.display = "none";
+    }
+
+    // 模拟文件上传
+    // 模拟选择文件（实际应用中应更新全局变量或其他状态）
+    function selectFile(file) {
+      // 将选中的文件对象赋值给全局变量，以便后续获取文件内容
+      selectedFileObj = file;
+      console.log('Selected file:', file);
+    }
+    // 模拟文件上传
+
+    // 获取选中文件内容（根据实际的文件类型和存储方式获取）
+    function getSelectedFileContent() {
+      // 如果有选中的文件对象
+      if (selectedFileObj) {
+        // 获取文件扩展名
+        const fileExtension = selectedFileObj.name.split('.').pop();
+        // 根据文件扩展名判断文件类型并获取相应内容
+        if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+          // 假设文件内容以字符串形式存储在全局变量中，这里模拟 Excel 文件内容获取
+          // 在实际应用中，应根据后端处理 Excel 文件上传和存储的方式获取内容
+          return uploadedFiles.find(f => f.name === selectedFileObj.name).excelContent;
+        } else if (fileExtension === 'pdf') {
+          // 同理，对于 PDF 文件
+          return uploadedFiles.find(f => f.name === selectedFileObj.name).pdfContent;
+        } else if (fileExtension === 'doc' || fileExtension === 'docx') {
+          // 对于 Word 文件
+          return uploadedFiles.find(f => f.name === selectedFileObj.name).wordContent;
+        }
+      }
+      // 如果没有选中文件，返回空字符串
+      return "";
+    }
+
+    // 获取聊天历史（假设在全局变量中存储）
+    function getChatHistory() {
+      // 初始化聊天历史字符串
+      let chatHistoryStr = "";
+      // 假设聊天历史存储在一个数组中，格式为[{user: "message", assistant: "response"},...]
+      const chatHistoryArray = []; // 这里应该从实际存储聊天历史的地方获取
+      // 遍历聊天历史数组，拼接聊天记录字符串
+      chatHistoryArray.forEach((entry) => {
+        chatHistoryStr += `User: ${entry.user}\nAssistant: ${entry.assistant}\n`;
+      });
+      // 返回聊天历史字符串
+      return chatHistoryStr;
+    }
+  </script>
+</body>
+
+</html>
