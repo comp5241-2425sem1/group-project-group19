@@ -9,9 +9,9 @@ if os.path.exists(file_path):
 else:
     secrets = st.secrets
 
-# 检查secrets的结构并获取API密钥
-if 'OPENROUTER_API_KEY' in secrets:
-    OPENROUTER_API_KEY = secrets['OPENROUTER_API_KEY']
+# # 检查secrets的结构并获取API密钥
+if 'OPENROUTER' in secrets and 'OPENROUTER_API_KEY' in secrets['OPENROUTER']:
+    OPENROUTER_API_KEY = secrets['OPENROUTER']['OPENROUTER_API_KEY']
 else:
     raise KeyError("OPENROUTER_API_KEY not found in secrets. Please check your configuration.")
 
