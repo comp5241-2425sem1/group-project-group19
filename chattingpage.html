@@ -6,7 +6,7 @@
   <title>GPT Chat Interface</title>
   <style>
     /* 整体容器样式 */
- .chat-container {
+  .chat-container {
         width: 400px;
         margin: 0 auto;
         border: 1px solid #ccc;
@@ -16,24 +16,24 @@
       }
 
     /* 聊天记录项样式 */
- .chat-item {
+  .chat-item {
         margin-bottom: 10px;
         padding: 5px;
         border-radius: 5px;
       }
 
- .user {
+  .user {
         background-color: #e6f7ff;
         text-align: right;
       }
 
- .assistant {
+  .assistant {
         background-color: #f2f2f2;
         text-align: left;
       }
 
     /* 文件上传按钮样式 */
- .upload-btn {
+  .upload-btn {
         background-color: #007BFF;
         color: white;
         padding: 5px 10px;
@@ -43,7 +43,7 @@
       }
 
     /* 文件列表样式 */
- .file-list {
+  .file-list {
         display: none;
         position: absolute;
         background-color: white;
@@ -54,12 +54,12 @@
       }
 
     /* 文件列表项样式 */
- .file-item {
+  .file-item {
         cursor: pointer;
         padding: 3px;
       }
 
- .file-item:hover {
+  .file-item:hover {
         background-color: #f0f0f0;
       }
   </style>
@@ -82,7 +82,7 @@
     <div>
       <button class="upload-btn" onmouseover="showFileList()">上传文件</button>
       <div id="file-list" class="file-list">
-        <!-- 这里将通过 JavaScript 动态添加文件列表项 -->
+        <!-- 通过 JavaScript 动态添加文件列表项 -->
       </div>
     </div>
   </div>
@@ -90,10 +90,10 @@
   <script>
     // 存储已上传文件列表（模拟数据，实际应用中应从后端获取）
     const uploadedFiles = [];
-    // 当前选中的文件对象，用于记录用户在文件列表中选择的文件
+    // 当前选中的文件对象
     let selectedFileObj = null;
 
-    // 函数用于向聊天记录容器中添加聊天记录项
+    // 函数用于添加聊天记录项
     function addChatItem(message, isUser) {
       // 获取聊天记录容器元素
       const chatLog = document.getElementById('chat-log');
@@ -140,11 +140,11 @@
           "Please provide a detailed and structured response.\n\n" +
           "This is the document uploaded by the user. If the user asks about the document, " +
           "answer any questions about the document. \n\nThe document:\n\n" +
-          // 获取选中的文件内容（假设在全局变量中存储），为后端提供文件相关信息
+          // 获取选中的文件内容，为后端提供文件相关信息
           getSelectedFileContent() +
           "\n\nNote: This is your history of the conversation with the user, don't forget to follow " +
           "it up and continue answering the user's questions, chat history is as follows:\n" +
-          // 获取聊天历史（假设在全局变量中存储），为后端提供聊天历史信息
+          // 获取聊天历史，为后端提供聊天历史信息
           getChatHistory() +
           "";
 
@@ -167,6 +167,9 @@
 
         // 将后端返回的回答添加到聊天记录中，标记为助手回复
         addAssistantResponse(assistantResponse);
+
+        // 更新前端显示的聊天历史（假设存在一个 Streamlit 组件用于显示聊天历史）
+        updateChatHistoryInStreamlit([...window.chatHistory, { user: userMessage, assistant: assistantResponse }]);
       } catch (error) {
         console.error('Error fetching response:', error);
         // 如果获取回答出错，添加错误消息到聊天记录中
@@ -215,14 +218,12 @@
       fileList.style.display = "none";
     }
 
-    // 模拟文件上传
-    // 模拟选择文件（实际应用中应更新全局变量或其他状态）
+    // 模拟选择文件
     function selectFile(file) {
       // 将选中的文件对象赋值给全局变量，以便后续获取文件内容
       selectedFileObj = file;
       console.log('Selected file:', file);
     }
-    // 模拟文件上传
 
     // 获取选中文件内容（根据实际的文件类型和存储方式获取）
     function getSelectedFileContent() {
@@ -232,14 +233,13 @@
         const fileExtension = selectedFileObj.name.split('.').pop();
         // 根据文件扩展名判断文件类型并获取相应内容
         if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-          // 假设文件内容以字符串形式存储在全局变量中，这里模拟 Excel 文件内容获取
-          // 在实际应用中，应根据后端处理 Excel 文件上传和存储的方式获取内容
+          // 处理 Excel 文件上传和存储的方式获取内容
           return uploadedFiles.find(f => f.name === selectedFileObj.name).excelContent;
         } else if (fileExtension === 'pdf') {
-          // 同理，对于 PDF 文件
+          // PDF 文件
           return uploadedFiles.find(f => f.name === selectedFileObj.name).pdfContent;
         } else if (fileExtension === 'doc' || fileExtension === 'docx') {
-          // 对于 Word 文件
+          // Word 文件
           return uploadedFiles.find(f => f.name === selectedFileObj.name).wordContent;
         }
       }
@@ -247,18 +247,31 @@
       return "";
     }
 
-    // 获取聊天历史（假设在全局变量中存储）
+    // 模拟聊天历史数据（实际应用中应从后端获取真实数据）
+    const mockChatHistory = [
+      "User: Could you tell me what skills are needed to become a data analyst?",
+      "AI: To become a data analyst, you need to master the following skills: 1. Programming languages (e.g., Python, R) 2. Data processing and cleaning 3. Database skills (e.g, SQL) 4. Data visualization tools (e.g., Tableau, PowerBl) 5. Statistics and mathematics basics 6. Basic machine learning 7. Business knowledge and communication skills Let me know if you want to delve deeper into any specific skill.",
+      "User: Could you please explain how Python programming is used in data analysis?",
+      "AI: Python is an ideal programming language for data analysis because it offers a wealth of libraries and tools, including: 1. Pandas: for data manipulation and analysis 2. NumPy: for scientific computing 3. Matplotlib and Seaborn: for data visualization 4. Scikit-learn: for machine learning With these tools, you can efficiently process, analyze, and visualize data. Is there anything else you would like to know?"
+    ];
+
+    // 获取聊天历史（通过 Streamlit 的方法与后端交互获取，目前为模拟实现）
     function getChatHistory() {
-      // 初始化聊天历史字符串
       let chatHistoryStr = "";
-      // 假设聊天历史存储在一个数组中，格式为[{user: "message", assistant: "response"},...]
-      const chatHistoryArray = []; // 这里应该从实际存储聊天历史的地方获取
-      // 遍历聊天历史数组，拼接聊天记录字符串
-      chatHistoryArray.forEach((entry) => {
-        chatHistoryStr += `User: ${entry.user}\nAssistant: ${entry.assistant}\n`;
+      const chatHistoryArray = [];
+      // 调用 Streamlit 的方法获取聊天历史（假设存在这样一个方法）
+      const backendChatHistory = window.st.getChatHistory || (() => mockChatHistory);
+      backendChatHistory().forEach((entry) => {
+        const [role, message] = entry.split(": ");
+        chatHistoryArray.push({ user: role === "User"? message : "", assistant: role === "AI"? message : "" });
+        chatHistoryStr += `${role}: ${message}\n`;
       });
-      // 返回聊天历史字符串
       return chatHistoryStr;
+    }
+
+    // 更新 Streamlit 中的聊天历史显示（假设存在这样一个方法）
+    function updateChatHistoryInStreamlit(chatHistory) {
+      window.st.updateChatHistory(chatHistory);
     }
   </script>
 </body>
