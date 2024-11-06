@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人信息修改</title>
+    <style>
+        /* 添加一些基本的样式 */
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .sidebar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 15px;
+        }
+        
+        .main-content {
+            flex-grow: 1;
+            padding: 15px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            height: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
+        
+        .close {
+            align-self: flex-end;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+        
+        .modal-content img {
+            border-radius: 50%;
+        }
+        
+        .modal-content label {
+            margin-top: 10px;
+        }
+        
+        .modal-content input {
+            margin-top: 5px;
+        }
+        
+        .modal-content button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <h1>主页面</h1>
+        <p>这里是主页面的内容。</p>
+    </div>
+    <div class="sidebar">
+        <img id="sidebarAvatar" src="images/default-avatar.png" alt="头像" width="50" onclick="openProfileModal()">
+        <p id="sidebarUsername">默认用户名</p>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>个人信息</h2>
+            <img id="displayAvatar" src="images/default-avatar.png" alt="头像" width="100">
+            <p id="displayUsername">Nickname：默认用户名</p>
+            <button onclick="openEditModal()">修改个人信息</button>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>修改个人信息</h2>
+            <div>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div>
+                <label for="avatar">上传头像:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+            </div>
+            <div>
+                <button id="saveProfile">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
