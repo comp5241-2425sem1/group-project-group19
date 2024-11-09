@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat and Mindmap</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <!-- 其他页面接入位置 -->
+        <img src="home-icon.png" alt="Home">
+        <img src="chat-icon.png" alt="Chat">
+        <img src="document-icon.png" alt="Documents">
+        <!-- 用户资料框 -->
+        <div class="profile">
+            <img src="profile-icon.png" alt="Profile" class="profile-img">
+            <p class="profile-username">Username</p>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="chat-area">
+            <div class="chat-box" id="chatBox">
+                <!-- Chat messages will appear here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type a message...">
+                <button onclick="uploadFile()">Upload</button>
+                <button onclick="sendMessage()">Send</button>
+                <input type="file" id="fileInput" style="display: none;" />
+            </div>
+        </div>
+        <div class="resizer"></div>
+        <div class="mindmap">
+            <h3>Mindmap</h3>
+            <!-- Mindmap content goes here -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
