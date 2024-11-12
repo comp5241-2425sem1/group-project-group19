@@ -1,413 +1,78 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown2Mindmap</title>
+    <title>AI Chat and Mindmap</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/3.0.13/go.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            gap: 20px;
-            flex: 1;
-        }
-
-        .input-section,
-        .output-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-            font-family: monospace;
-        }
-
-        #myDiagram {
-            width: 100%;
-            height: 100%;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        h2 {
-            margin-bottom: 10px;
-        }
-
-        .floating-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .zoom-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .zoom-slider {
-            width: 150px;
-        }
-
-        .zoom-value {
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .control-button {
-            padding: 8px 12px;
-            background-color: #00A9C9;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .control-button:hover {
-            background-color: #0088a0;
-        }
-
-        .output-section {
-            position: relative;
-        }
-
-        .summary-float {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
-            resize: both;
-            overflow: auto;
-        }
-
-        .summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #00A9C9;
-            color: white;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            cursor: move;
-        }
-
-        .summary-content {
-            padding: 10px;
-        }
-
-        #summaryInput {
-            width: 100%;
-            height: 60px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            resize: none;
-            font-family: monospace;
-            margin-bottom: 10px;
-        }
-
-        #summaryDisplay {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background-color: #fff;
-        }
-
-        .minimized .summary-content {
-            display: none;
-        }
-
-        .minimized {
-            height: 40px;
-        }
-
-        #toggleSummaryButton {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-        }
-
-        .minimized {
-            height: 40px;
-        }
-
-        .summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            /* 确保子元素的绝对定位相对于此元素 */
-        }
-
-        #toggleSummaryButton {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1001;
-        }
-
-
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 80px;
-        }
-
-        .message-wrapper {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .user-message {
-            flex-direction: row-reverse;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            background-color: #e0e0e0;
-            overflow: hidden;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .message-content {
-            max-width: calc(100% - 60px);
-        }
-
-        .sender-info {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 4px;
-        }
-
-        .user-message .sender-info {
-            text-align: right;
-        }
-
-        .user-message .message-bubble {
-            background-color: #95ec69;
-            margin-left: auto;
-        }
-
-        .gpt-message .message-bubble {
-            background-color: #ffffff;
-        }
-
-        .message-bubble {
-            max-width: 100%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            word-wrap: break-word;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-        }
-
-        .input-container {
-            position: relative;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #f5f5f7;
-            padding: 10px 20px;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .input-box {
-            flex: 1;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 8px 15px;
-            background-color: #fff;
-            min-height: 40px;
-            max-height: 120px;
-            overflow-y: auto;
-            outline: none;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .attach-btn,
-        .send-btn {
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .attach-btn {
-            background-color: #52c41a;
-        }
-
-        .send-btn {
-            background-color: #1890ff;
-        }
-
-        .attach-btn:hover {
-            background-color: #3eaf0d;
-        }
-
-        .send-btn:hover {
-            background-color: #096dd9;
-        }
-
-        .send-btn:disabled {
-            background-color: #bfbfbf;
-            cursor: not-allowed;
-        }
-
-
-
-        .markdown-body {
-            line-height: 1.6;
-        }
-
-        .markdown-body h1 {
-            font-size: 1.5em;
-            margin: 0.5em 0;
-        }
-
-        .markdown-body h2 {
-            font-size: 1.3em;
-            margin: 0.5em 0;
-        }
-
-        .markdown-body h3 {
-            font-size: 1.1em;
-            margin: 0.5em 0;
-        }
-
-        .markdown-body code {
-            background-color: rgba(0, 0, 0, 0.05);
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-        }
-
-        .markdown-body pre {
-            background-color: #f6f8fa;
-            padding: 12px;
-            border-radius: 6px;
-            overflow-x: auto;
-        }
-
-        .markdown-body pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-
-        .markdown-body ul,
-        .markdown-body ol {
-            padding-left: 20px;
-            margin: 0.5em 0;
-        }
-
-        .markdown-body p {
-            margin: 0.5em 0;
-        }
-
-        .markdown-body blockquote {
-            margin: 0.5em 0;
-            padding-left: 1em;
-            border-left: 4px solid #ddd;
-            color: #666;
-        }
-
-        .gpt-message .message-bubble {
-            background-color: #f5f5f5;
-            max-width: 100%;
-        }
-
-        .message-bubble.markdown-content {
-            font-size: 14px;
-            line-height: 1.6;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="input-section" style="height:95vh;overflow-y:auto">
-            <h2>Conversation</h2>
 
-            <div class="chat-container" id="chatContainer">
-                <!-- 示例消息 -->
-                <div class="message-wrapper gpt-message">
-                    <div class="avatar">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234A90E2'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='35' fill='white' text-anchor='middle' alignment-baseline='middle'%3EAI%3C/text%3E%3C/svg%3E"
-                            alt="GPT">
-                    </div>
-                    <div class="message-content">
-                        <div class="sender-info">GPT Assistant • 10:00</div>
-                        <div class="message-bubble">你好！我是AI助手，很高兴为你服务。</div>
+    <div id="profileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>个人信息</h2>
+            <img id="displayAvatar" src="asset/profile-icon.png" alt="头像" width="100">
+            <p id="displayUsername">Nickname：默认用户名</p>
+            <button onclick="openEditModal()">修改个人信息</button>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>修改个人信息</h2>
+            <div>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div>
+                <label for="avatar">上传头像:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+            </div>
+            <div>
+                <button id="saveProfile">保存</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="sidebar">
+        <!-- 其他页面接入位置 -->
+        <img src="asset/home-icon.png" alt="Home">
+        <img src="asset/chat-icon.png" alt="Chat">
+        <img src="asset/document-icon.png" alt="Documents">
+        <!-- 用户资料框 -->
+        <div class="profile"onclick="openProfileModal()">
+            <img src="asset/profile-icon.png" id="sidebarAvatar" alt="Profile" class="profile-img">
+            <p class="profile-username" id="sidebarUsername">Username</p>
+        </div>
+
+    </div>
+    <div class="main-content">
+        <div class="chat-area">
+            <div class="chat-box" id="chatBox">
+                <!-- Chat messages will appear here -->
+                <div class="chat-container" id="chatContainer">
+                    <!-- 示例消息 -->
+                    <div class="message-wrapper gpt-message">
+                        <div class="avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234A90E2'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='35' fill='white' text-anchor='middle' alignment-baseline='middle'%3EAI%3C/text%3E%3C/svg%3E"
+                                alt="GPT">
+                        </div>
+                        <div class="message-content">
+                            <div class="sender-info">GPT Assistant • 10:00</div>
+                            <div class="message-bubble">你好！我是AI助手，很高兴为你服务。</div>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="input-container">
                 <div class="input-box" id="inputBox" contenteditable="true"></div>
                 <div class="button-group">
@@ -417,10 +82,11 @@
                     <button class="send-btn" id="sendButton">发送</button>
                 </div>
             </div>
-
         </div>
-        <div class="output-section">
-            <h2>Mindmap</h2>
+        <div class="resizer"></div>
+        <div class="mindmap">
+            <h3>Mindmap</h3>
+            <!-- Mindmap content goes here -->
             <div id="myDiagram"></div>
             <div class="floating-controls">
                 <div class="zoom-control">
@@ -431,372 +97,24 @@
                 <button class="control-button" id="saveButton">Save as png</button>
                 <button class="control-button" id="refresh">Refresh Mindmap</button>
             </div>
+            <div class="summary-float minimized">
+                <div class="summary-header">
+                    <h2>总结</h2>
+                    <button id="toggleSummaryButton">展开</button>
+                </div>
+                <div class="summary-content">
+                    <textarea id="summaryInput" placeholder="输入总结性语句..."></textarea>
+                    <button class="control-button" id="addSummaryButton">添加总结</button>
+                    <button class="control-button" id="generateSummaryButton">生成总结和建议</button>
+                    <div id="summaryDisplay"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="summary-float minimized">
-        <div class="summary-header">
-            <h2>总结</h2>
-            <button id="toggleSummaryButton">展开</button>
-        </div>
-        <div class="summary-content">
-            <textarea id="summaryInput" placeholder="输入总结性语句..."></textarea>
-            <button class="control-button" id="addSummaryButton">添加总结</button>
-            <button class="control-button" id="generateSummaryButton">生成总结和建议</button>
-            <div id="summaryDisplay"></div>
-        </div>
-    </div>
-
-    <script>
-        function initDiagram() {
-            const $ = go.GraphObject.make;
-            const diagram = $(go.Diagram, "myDiagram", {
-                "undoManager.isEnabled": true,
-                layout: $(go.TreeLayout, {
-                    angle: 0,
-                    nodeSpacing: 20,
-                    layerSpacing: 50
-                }),
-                initialContentAlignment: go.Spot.Center,
-                "animationManager.isEnabled": false,
-
-                "ViewportBoundsChanged": function (e) {
-                    const zoomSlider = document.getElementById("zoomSlider");
-                    if (zoomSlider) {
-                        const zoomPercentage = Math.round(diagram.scale * 100);
-                        zoomSlider.value = zoomPercentage;
-                        zoomValue.textContent = zoomPercentage + "%";
-                    }
-                }
-            });
-
-            diagram.nodeTemplate =
-                $(go.Node, "Auto",
-                    $(go.Shape, "RoundedRectangle", {
-                        fill: "white",
-                        stroke: "#00A9C9",
-                        strokeWidth: 2
-                    }),
-                    $(go.TextBlock, {
-                        margin: 8,
-                        font: "bold 14px sans-serif"
-                    }, new go.Binding("text", "text"))
-                );
-
-            diagram.linkTemplate =
-                $(go.Link, {
-                    routing: go.Link.Orthogonal,
-                    corner: 5
-                },
-                    $(go.Shape, {
-                        stroke: "#00A9C9",
-                        strokeWidth: 2
-                    })
-                );
-
-            return diagram;
-        }
-
-        function parseMarkdownToTree(mdText) {
-            const tokens = marked.lexer(mdText);
-            const nodeDataArray = [];
-            const linkDataArray = [];
-            let currentKey = 0;
-            let parentStack = [{ key: -1, level: 0 }];
-
-            tokens.forEach(token => {
-                if (token.type === 'heading') {
-                    const level = token.depth;
-                    while (parentStack[parentStack.length - 1].level >= level) {
-                        parentStack.pop();
-                    }
-
-                    const nodeData = {
-                        key: currentKey,
-                        text: token.text,
-                        level: level
-                    };
-                    nodeDataArray.push(nodeData);
-
-                    if (parentStack[parentStack.length - 1].key !== -1) {
-                        linkDataArray.push({
-                            from: parentStack[parentStack.length - 1].key,
-                            to: currentKey
-                        });
-                    }
-
-                    parentStack.push({ key: currentKey, level: level });
-                    currentKey++;
-                }
-            });
-
-            return {
-                nodeDataArray: nodeDataArray,
-                linkDataArray: linkDataArray
-            };
-        }
-
-        const diagram = initDiagram();
-        var textarea = '# Title\n## Subtitle1\n### Content1\n#### Subcontent1\n##### Subsubcontent1\n### Content2\n#### Subcontent2\n##### Subsubcontent2\n## Subtitle2\n### Content3\n### Content4\n            '
-        const zoomSlider = document.getElementById('zoomSlider');
-        const zoomValue = document.getElementById('zoomValue');
-        const saveButton = document.getElementById('saveButton');
-        const refresh = document.getElementById('refresh');
-
-        function updateDiagram() {
-            const mdText = textarea;
-            const treeData = parseMarkdownToTree(mdText);
-            diagram.model = new go.GraphLinksModel(
-                treeData.nodeDataArray,
-                treeData.linkDataArray
-            );
-        }
-
-        zoomSlider.addEventListener('input', function (e) {
-            const zoomPercentage = parseInt(e.target.value);
-            diagram.scale = zoomPercentage / 100;
-            zoomValue.textContent = zoomPercentage + '%';
-        });
-
-        saveButton.addEventListener('click', async function () {
-            const currentScale = diagram.scale;
-            const currentPosition = diagram.position.copy();
-
-            try {
-                diagram.zoomToFit();
-                await diagram.commitTransaction();
-
-                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-                diagram.nodes.each(node => {
-                    const bounds = node.actualBounds;
-                    minX = Math.min(minX, bounds.x);
-                    minY = Math.min(minY, bounds.y);
-                    maxX = Math.max(maxX, bounds.x + bounds.width);
-                    maxY = Math.max(maxY, bounds.y + bounds.height);
-                });
-
-                const padding = 5;
-                minX -= padding;
-                minY -= padding;
-                maxX += padding;
-                maxY += padding;
-
-                const width = maxX - minX;
-                const height = maxY - minY;
-                const scale = 2;
-
-                diagram.scale = 1;
-                const imageData = diagram.makeImageData({
-                    scale: scale,
-                    background: "white",
-                    type: "image/png",
-                    position: new go.Point(minX, minY),
-                    size: new go.Size(width * 2, height * 2),
-                    maxSize: new go.Size(width * scale, height * scale)
-                });
-
-                const now = new Date();
-                const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-                const filename = `mindmap_${timestamp}.png`;
-
-                const blob = dataURItoBlob(imageData);
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = url;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(url);
-                }, 100);
-
-            } catch (e) {
-                console.error('Error saving image:', e);
-            } finally {
-                diagram.scale = currentScale;
-                diagram.position = currentPosition;
-                diagram.commitTransaction();
-            }
-        });
-
-        function dataURItoBlob(dataURI) {
-            const byteString = atob(dataURI.split(',')[1]);
-            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-
-            return new Blob([ab], { type: mimeString });
-        }
-
-        updateDiagram();
-
-        refresh.addEventListener('click', async function () {
-            refresh.disabled = true;
-            try {
-                const response = await fetch('/get_result');
-                const result = await response.text();
-                textarea = result;
-
-                await updateDiagram();
-            } catch (error) {
-                console.error('Error fetching result:', error);
-            } finally {
-                refresh.disabled = false;
-            }
-        });
-
-        document.getElementById('addSummaryButton').addEventListener('click', function () {
-            const summaryInput = document.getElementById('summaryInput').value;
-            const summaryDisplay = document.getElementById('summaryDisplay');
-            summaryDisplay.textContent = summaryInput;
-        });
-
-        document.getElementById('generateSummaryButton').addEventListener('click', async function () {
-            const mdText = textarea.value;
-            try {
-                const response = await fetch('/generate_summary', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ markdown: mdText })
-                });
-                const result = await response.json();
-                const summaryInput = document.getElementById('summaryInput');
-                summaryInput.value = result.summary;
-            } catch (error) {
-                console.error('Error generating summary:', error);
-            }
-        });
-
-        document.getElementById('toggleSummaryButton').addEventListener('click', function () {
-            const summaryFloat = document.querySelector('.summary-float');
-            const isMinimized = summaryFloat.classList.toggle('minimized');
-            this.textContent = isMinimized ? '展开' : '最小化';
-        });
-
-        // 添加拖动功能
-        const summaryHeader = document.querySelector('.summary-header');
-        summaryHeader.addEventListener('mousedown', function (e) {
-            const summaryFloat = document.querySelector('.summary-float');
-            let offsetX = e.clientX - summaryFloat.getBoundingClientRect().left;
-            let offsetY = e.clientY - summaryFloat.getBoundingClientRect().top;
-
-            function onMouseMove(e) {
-                summaryFloat.style.left = `${e.clientX - offsetX}px`;
-                summaryFloat.style.top = `${e.clientY - offsetY}px`;
-            }
-
-            document.addEventListener('mousemove', onMouseMove);
-
-            document.addEventListener('mouseup', function () {
-                document.removeEventListener('mousemove', onMouseMove);
-            }, { once: true });
-        });
 
 
-
-        const chatContainer = document.getElementById('chatContainer');
-        const inputBox = document.getElementById('inputBox');
-        const sendButton = document.getElementById('sendButton');
-        const attachButton = document.getElementById('attachButton');
-
-        function getCurrentTime() {
-            const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' +
-                now.getMinutes().toString().padStart(2, '0');
-        }
-
-        function addMessage(content, isUser = true) {
-            const messageWrapper = document.createElement('div');
-            messageWrapper.className = `message-wrapper ${isUser ? 'user-message' : 'gpt-message'}`;
-
-            const avatar = document.createElement('div');
-            avatar.className = 'avatar';
-            const avatarImg = document.createElement('img');
-            avatarImg.src = isUser
-                ? "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23FF9500'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='35' fill='white' text-anchor='middle' alignment-baseline='middle'%3EMe%3C/text%3E%3C/svg%3E"
-                : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234A90E2'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='35' fill='white' text-anchor='middle' alignment-baseline='middle'%3EAI%3C/text%3E%3C/svg%3E";
-            avatar.appendChild(avatarImg);
-
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-
-            const senderInfo = document.createElement('div');
-            senderInfo.className = 'sender-info';
-            senderInfo.textContent = `${isUser ? 'You' : 'GPT Assistant'} • ${getCurrentTime()}`;
-
-            const messageBubble = document.createElement('div');
-            messageBubble.className = 'message-bubble';
-
-            if (isUser) {
-                messageBubble.textContent = content;
-            } else {
-                // 对GPT返回的内容进行Markdown渲染
-                messageBubble.className += ' markdown-content markdown-body';
-                messageBubble.innerHTML = marked.parse(content);
-            }
-
-            messageContent.appendChild(senderInfo);
-            messageContent.appendChild(messageBubble);
-
-            messageWrapper.appendChild(avatar);
-            messageWrapper.appendChild(messageContent);
-            chatContainer.appendChild(messageWrapper);
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function sendMessage() {
-            const content = inputBox.textContent.trim();
-            if (content) {
-                addMessage(content, true);
-                inputBox.textContent = '';
-
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ question: content })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        addMessage(data.response, false);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            }
-        }
-
-        sendButton.addEventListener('click', sendMessage);
-
-        inputBox.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-
-        attachButton.addEventListener('click', () => {
-            alert('附件功能待实现');
-        });
-
-        inputBox.addEventListener('input', () => {
-            sendButton.disabled = !inputBox.textContent.trim();
-        });
-
-
-
-    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
