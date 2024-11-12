@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from mindmap import Conversation2Markdown as c2m
-from chat.chatbot import ChatBot
+from chatLLM.chatbot import ChatBot
 
 app = Flask(__name__)
 bot = ChatBot()
