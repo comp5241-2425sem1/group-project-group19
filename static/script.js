@@ -194,6 +194,8 @@ refresh.addEventListener('click', async function () {
         const response = await fetch('/get_result');
         const result = await response.text();
         textarea = result;
+        const summaryInput = document.getElementById('summaryInput');
+        summaryInput.value = result;
 
         await updateDiagram();
     } catch (error) {
@@ -203,34 +205,30 @@ refresh.addEventListener('click', async function () {
     }
 });
 
-document.getElementById('addSummaryButton').addEventListener('click', function () {
-    const summaryInput = document.getElementById('summaryInput').value;
-    const summaryDisplay = document.getElementById('summaryDisplay');
-    summaryDisplay.textContent = summaryInput;
-});
 
-document.getElementById('generateSummaryButton').addEventListener('click', async function () {
-    const mdText = textarea.value;
-    try {
-        const response = await fetch('/generate_summary', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ markdown: mdText })
-        });
-        const result = await response.json();
-        const summaryInput = document.getElementById('summaryInput');
-        summaryInput.value = result.summary;
-    } catch (error) {
-        console.error('Error generating summary:', error);
-    }
-});
+
+// document.getElementById('generateSummaryButton').addEventListener('click', async function () {
+//     const mdText = textarea.value;
+//     try {
+//         const response = await fetch('/get_result', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({ markdown: mdText })
+//         });
+//         const result = await response.json();
+//         const summaryInput = document.getElementById('summaryInput');
+//         summaryInput.value = result.summary;
+//     } catch (error) {
+//         console.error('Error generating summary:', error);
+//     }
+// });
 
 document.getElementById('toggleSummaryButton').addEventListener('click', function () {
     const summaryFloat = document.querySelector('.summary-float');
     const isMinimized = summaryFloat.classList.toggle('minimized');
-    this.textContent = isMinimized ? '展开' : '最小化';
+    //this.textContent = isMinimized ? '展开' : '最小化';
 });
 
 // 添加拖动功能
