@@ -1,10 +1,14 @@
+import os
 from chatLLM import llm
 
 class ChatBot:
-    def __init__(self):
+    def __init__(self, topic, jobDescription, experienceLevel):
         self.chat_history = []
         self.user_question = ""
         self.response = ""
+        self.topic = topic
+        self.jobDescription = jobDescription
+        self.experienceLevel = experienceLevel
 
     def clear_history(self):
         """Clear the chat history and reset user question and response."""
@@ -22,25 +26,30 @@ class ChatBot:
         if not self.user_question:
             return "Please enter a question."
 
-        system_prompt = (
-            "You are a knowledgeable assistant. Based on the user's given topic, "
-            "you should progressively expand the knowledge framework by asking questions "
-            "and providing explanations. The knowledge framework should follow a hierarchical "
-            "structure from broad concepts to detailed practical operations. For example:\n"
-            "Topic A - Concept 1 - Practical steps a, b, c\n"
-            "Topic A - Concept 2 - Practical steps a, b\n"
-            "...\n"
-            "Topic N - Concept k - Practical steps a, b, c\n"
-            "Please provide a detailed and structured response."
-            "This is your history of the conversation with the user, don't forget to follow "
-            f"it up and continue answering the user's questions, chat history is as follows: {self.chat_history}" 
-        )
+        system_prompt = self.load_system_prompt()
 
         user_prompt = f"User question:\n{self.user_question}"
 
         self.response = llm.answer(system_prompt, user_prompt)
         self.chat_history.append(f"AI: {self.response}")
         return self.response
+
+    def load_system_prompt(self):
+        """Load the system prompt from a text file and format it with the current context."""
+        current_dir = os.path.dirname(__file__)
+        file_path = os.path.join(current_dir, 'system_prompt.txt')
+        with open(file_path, 'r') as file:
+            system_prompt = file.read()
+
+        # Format the system prompt with the current context
+        system_prompt = system_prompt.format(
+            Topic=self.topic,
+            Level=self.experienceLevel,  # You can adjust this as needed
+            job_description=self.jobDescription,
+            chat_history=self.chat_history
+        )
+
+        return system_prompt
 
     def get_chat_history(self):
         """Return the chat history."""
@@ -52,7 +61,7 @@ class ChatBot:
 
 # Example usage
 if __name__ == "__main__":
-    bot = ChatBot()
+    bot = ChatBot(topic="Artificial Intelligence", jobDescription="Develop AI models", experienceLevel="Intermediate")
     bot.add_user_question("What is the capital of France?")
     response = bot.generate_response()
     print(response)

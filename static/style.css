@@ -252,7 +252,7 @@ h2 {
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #00A9C9;
+    background: linear-gradient(135deg, #1e3c72 0%, #00A9C9 100%);
     color: white;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -569,4 +569,204 @@ h2 {
 
 .modal-content button:hover {
     background-color: #45a049;
+}
+
+.hide  {
+    display: none;
+}
+
+
+
+
+
+
+/* file */
+.file-list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.file-list th,
+.file-list td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.file-list th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+.file-list td {
+    vertical-align: middle;
+}
+
+.file-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.edit-buttons button {
+    margin-right: 5px;
+}
+
+.upload-row {
+    text-align: center;
+}
+
+.upload-row input[type="file"] {
+    display: none;
+}
+
+.upload-row label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.file-content {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+
+
+/* welcome */
+
+
+.welcome {
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.start-dialog {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-text {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1e3c72;
+}
+
+.welcome-text h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-text p {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #444;
+    font-weight: 500;
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: #1e3c72;
+    box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.optional-label {
+    display: inline-flex;
+    align-items: center;
+}
+
+.optional-badge {
+    background-color: #e0e0e0;
+    color: #666;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1e3c72 0%, #00A9C9 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 500;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
 }

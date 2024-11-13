@@ -8,7 +8,7 @@ class content():
 
 
 app = Flask(__name__)
-bot = ChatBot()
+bot = ChatBot("","","")
 c1=content()
 @app.route('/get_result', methods=['GET'])
 def get_result():
@@ -37,3 +37,28 @@ def chat():
     response = bot.generate_response()
     print(f"AI response: {response}")
     return jsonify({'response': response})
+
+
+@app.route('/start_chat', methods=['POST'])
+def start_chat():
+    bot.clear_history()
+    data = request.json
+    topic = data.get('topic')
+    jd = data.get('jobDescription')
+    level = data.get('experienceLevel')
+    
+    bot.topic = topic
+    bot.jobDescription = jd
+    bot.experienceLevel = level
+    print(f"Chat started on topic: {bot.topic}")
+    print(f"Job description: {bot.jobDescription}")
+    print(f"Experience level: {bot.experienceLevel}")
+
+    
+    # 返回响应
+    return jsonify({
+        'message': 'Chat started successfully',
+        'topic': topic,
+        'jobDescription': jd,
+        'experienceLevel': level
+    })

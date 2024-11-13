@@ -9,7 +9,7 @@ Detail:
 #Each concept's explanation should be limited to 30 characters. 
 #For concepts that may have associations or overlaps, prioritize merging explanations; if merging makes the statement unclear, list them separately.
 # The user's chat history may not strictly follow a knowledge framework, but you should identify the hierarchical relationships between topics in the text and then summarize them into a tree structure. Creating new subtopics should always be the last resort. The returned text should be structured in a depth-first manner rather than breadth-first.
-#所有内容只有一个总主题
+#There's only one main subject for all content.
 [MOST IMPORTANT]Ensure that every line of text starts with "#" and pay special attention to the last level of text, which must also start with "#" (more than the previous level text by one "#").
 
 

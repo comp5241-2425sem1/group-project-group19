@@ -404,4 +404,166 @@ window.onclick = function(event) {
     if (event.target == editModal) {
         editModal.style.display = "none";
     }
+};
+
+const filepage = document.getElementsByClassName("file-content");
+const filebutton = document.getElementById("file-button");
+const mainpage = document.getElementsByClassName("main-content");
+const mainbutton = document.getElementById("chat-button");
+const welcome = document.getElementsByClassName("welcome");
+const welcomebutton = document.getElementById("welcome-button");
+
+filebutton.addEventListener('click', function () {
+    filepage[0].style.display = "block";
+    mainpage[0].style.display = "none";
+    welcome[0].style.display = "none";
+    filebutton.classList.add("active");
+    mainbutton.classList.remove("active");
+    welcomebutton.classList.remove("active");
+});
+
+mainbutton.addEventListener('click', function () {
+    filepage[0].style.display = "none";
+    mainpage[0].style.display = "flex";
+    welcome[0].style.display = "none";
+    filebutton.classList.remove("active");
+    mainbutton.classList.add("active");
+    welcomebutton.classList.add("active");
+});
+
+welcomebutton.addEventListener('click', function () {
+    filepage[0].style.display = "none";
+    mainpage[0].style.display = "none";
+    welcome[0].style.display = "flex";
+    filebutton.classList.remove("active");
+    mainbutton.classList.remove("active");
+});
+
+
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const fileTableBody = document.getElementById('fileTableBody');
+        const newRow = document.createElement('tr');
+
+        const fileIconCell = document.createElement('td');
+        const fileIcon = document.createElement('img');
+        fileIcon.className = 'file-icon';
+        fileIcon.src = getFileIcon(file.name);
+        fileIconCell.appendChild(fileIcon);
+
+        const fileNameCell = document.createElement('td');
+        fileNameCell.textContent = file.name;
+
+        const uploadTimeCell = document.createElement('td');
+        uploadTimeCell.textContent = new Date().toLocaleString();
+
+        const editButtonsCell = document.createElement('td');
+        editButtonsCell.className = 'edit-buttons';
+        const renameButton = document.createElement('button');
+        renameButton.textContent = '改名';
+        renameButton.onclick = () => renameFile(fileNameCell);
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '删除';
+        deleteButton.onclick = () => deleteFile(newRow);
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = '下载';
+        downloadButton.onclick = () => downloadFile(file);
+        editButtonsCell.appendChild(renameButton);
+        editButtonsCell.appendChild(deleteButton);
+        editButtonsCell.appendChild(downloadButton);
+
+        newRow.appendChild(fileIconCell);
+        newRow.appendChild(fileNameCell);
+        newRow.appendChild(uploadTimeCell);
+        newRow.appendChild(editButtonsCell);
+
+        fileTableBody.appendChild(newRow);
+    }
 }
+
+function getFileIcon(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    switch (extension) {
+        case 'txt':
+            return 'icons/txt-icon.png';
+        case 'pdf':
+            return 'icons/pdf-icon.png';
+        case 'doc':
+        case 'docx':
+            return 'icons/doc-icon.png';
+        default:
+            return 'icons/file-icon.png';
+    }
+}
+
+function renameFile(fileNameCell) {
+    const newName = prompt('请输入新的文件名:', fileNameCell.textContent);
+    if (newName) {
+        fileNameCell.textContent = newName;
+    }
+}
+
+function deleteFile(row) {
+    if (confirm('确定要删除这个文件吗?')) {
+        row.remove();
+    }
+}
+
+function downloadFile(file) {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function startChat() {
+    var topic = document.getElementById('topic').value;
+    var jd = document.getElementById('jd').value;
+    var level = document.querySelector('input[name="difficulty"]:checked').value;
+    
+    if (!topic.trim()) {
+        alert('Please enter a learning topic');
+        return;
+    }
+    
+    // 发送数据到 Flask 后端
+    fetch('/start_chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            topic: topic,
+            jobDescription: jd,
+            experienceLevel: level
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Chat started with:', data);
+        // 这里可以添加处理后端返回数据的逻辑
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    mainbutton.click();
+
+}
+
+// 添加输入框动画效果
+const inputs = document.querySelectorAll('input[type="text"], textarea');
+inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+        this.style.transform = 'scale(1.01)';
+    });
+
+    input.addEventListener('blur', function() {
+        this.style.transform = 'scale(1)';
+    });
+});
