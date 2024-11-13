@@ -1,3 +1,3 @@
 flask==3.0.3
 toml==0.10.2
-requirements-parser==2.32.3
+requests==2.32.3
