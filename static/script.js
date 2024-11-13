@@ -462,13 +462,16 @@ function handleFileUpload(event) {
         const editButtonsCell = document.createElement('td');
         editButtonsCell.className = 'edit-buttons';
         const renameButton = document.createElement('button');
-        renameButton.textContent = '改名';
+        renameButton.textContent = 'Rename';
+        renameButton.className = 'file-button';
         renameButton.onclick = () => renameFile(fileNameCell);
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = '删除';
+        deleteButton.textContent = 'Delete';
+        deleteButton.className = 'file-button';
         deleteButton.onclick = () => deleteFile(newRow);
         const downloadButton = document.createElement('button');
-        downloadButton.textContent = '下载';
+        downloadButton.textContent = 'Download';
+        downloadButton.className = 'file-button';
         downloadButton.onclick = () => downloadFile(file);
         editButtonsCell.appendChild(renameButton);
         editButtonsCell.appendChild(deleteButton);
@@ -487,14 +490,14 @@ function getFileIcon(fileName) {
     const extension = fileName.split('.').pop().toLowerCase();
     switch (extension) {
         case 'txt':
-            return 'icons/txt-icon.png';
+            return 'static/asset/txt.png';
         case 'pdf':
-            return 'icons/pdf-icon.png';
+            return 'static/asset/PDF.png';
         case 'doc':
         case 'docx':
-            return 'icons/doc-icon.png';
+            return 'static/asset/DOC.png';
         default:
-            return 'icons/file-icon.png';
+            return 'static/asset/file.png';
     }
 }
 
