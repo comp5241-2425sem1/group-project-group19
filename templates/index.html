@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Compass AI</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/3.0.13/go.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+
+
+
+
+
+
+
+    <div id="profileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Profile</h2>
+            <img id="displayAvatar" src="static/asset/profile-icon.png" alt="Avatar" width="100">
+            <p id="displayUsername">Nickname：默认用户名</p>
+            <button onclick="openEditModal()">修改个人信息</button>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>修改个人信息</h2>
+            <div>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username">
+            </div>
+            <div>
+                <label for="avatar">上传头像:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+            </div>
+            <div>
+                <button id="saveProfile">保存</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="sidebar">
+        <!-- 其他页面接入位置 -->
+        <img src="static/asset/home-icon.png" alt="Home" id="welcome-button">
+        <img src="static/asset/chat-icon.png" alt="Chat" id="chat-button">
+        <img src="static/asset/document-icon.png" alt="Documents" id="file-button">
+        <!-- 用户资料框 -->
+        <div class="profile" onclick="openProfileModal()">
+            <img src="static/asset/profile-icon.png" id="sidebarAvatar" alt="Profile" class="profile-img">
+            <p class="profile-username" id="sidebarUsername">Username</p>
+        </div>
+
+    </div>
+
+
+
+    <div class="welcome">
+
+        <div class="start-dialog">
+            <div class="welcome-text">
+                <h1>Career Compass AI</h1>
+                <p>Your intelligent guide to navigate job market insights and requirements</p>
+            </div>
+
+            <div class="input-group">
+                <label for="topic">What aspect of topic would you like to learn about?</label>
+                <input type="text" id="topic"
+                    placeholder="E.g., Front-End Engineer, Data Scientist...">
+            </div>
+
+            <div class="input-group">
+                <label class="optional-label" for="jd">
+                    Job Description
+                    <span class="optional-badge">Optional</span>
+                </label>
+                <textarea id="jd" placeholder="Paste the job description you're interested in here..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Select your experience level:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="difficulty" value="entry" checked>
+                        Entry Level
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="difficulty" value="mid">
+                        Mid Level
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="difficulty" value="senior">
+                        Senior Level
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="startChat()">Start Exploring</button>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="main-content hide">
+        <div class="chat-area">
+            <div class="chat-box" id="chatBox">
+                <!-- Chat messages will appear here -->
+                <div class="chat-container" id="chatContainer">
+                    <!-- 示例消息 -->
+                    <div class="message-wrapper gpt-message">
+                        <div class="avatar">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234A90E2'/%3E%3Ctext x='50' y='50' font-family='Arial' font-size='35' fill='white' text-anchor='middle' alignment-baseline='middle'%3EAI%3C/text%3E%3C/svg%3E"
+                                alt="GPT">
+                        </div>
+                        <div class="message-content">
+                            <div class="sender-info">GPT Assistant</div>
+                            <div class="message-bubble">Hi! If you're ready, tell me "start".</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-container">
+                <div class="input-box" id="inputBox" contenteditable="true"></div>
+                <div class="button-group">
+                    <button class="attach-btn" id="attachButton">
+                        File
+                    </button>
+                    <button class="send-btn" id="sendButton">Send</button>
+                </div>
+            </div>
+            <div id="filePopup" class="file-popup">
+                <div class="file-popup-content">
+                    <h3>选择文件</h3>
+                    <ul id="uploadedFilesList"></ul>
+                    <button id="confirmButton">确定</button>
+                </div>
+            </div>
+        </div>
+        <div class="resizer"></div>
+        <div class="mindmap">
+            <h3>Mindmap</h3>
+            <!-- Mindmap content goes here -->
+            <div id="myDiagram"></div>
+            <div class="floating-controls">
+                <div class="zoom-control">
+                    <span>Zoom:</span>
+                    <input type="range" min="25" max="200" value="100" class="zoom-slider" id="zoomSlider">
+                    <span class="zoom-value" id="zoomValue">100%</span>
+                </div>
+                <button class="control-button" id="saveButton">Save as png</button>
+                <button class="control-button" id="refresh">Refresh Mindmap</button>
+                <button class="control-button" id="toggleSummaryButton">
+                    <img src="static/asset/AI.png" alt="Toggle Summary" style="height:20px;padding: 0px;">
+                </button>
+            </div>
+            <div class="summary-float minimized">
+                <div class="summary-header">
+                    <h2>AI Summary</h2>
+
+                </div>
+                <div class="summary-content">
+                    <textarea id="summaryInput" placeholder="Summary content..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="file-content hide">
+
+        <h1>Upload Files</h1>
+        <table class="file-list">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Icon</th>
+                    <th style="text-align: center;">Name</th>
+                    <th style="text-align: center;">Upload Time</th>
+                    <th style="text-align: center;">Operation</th>
+                </tr>
+            </thead>
+            <tbody id="fileTableBody">
+                <!-- 已上传文件列表 -->
+            </tbody>
+            <tfoot>
+                <tr class="upload-row">
+                    <td colspan="4">
+                        <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx"
+                            onchange="handleFileUpload(event)">
+                        <label for="fileInput">Upload File</label>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>

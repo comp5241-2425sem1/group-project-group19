@@ -8,11 +8,14 @@ Detail:
 #Return Format: Only pure text, with all rows marked using "#". The number of "#" should be determined by you based on the importance and hierarchy of the content(but number of "#" must greater than zero). 
 #Each concept's explanation should be limited to 30 characters. 
 #For concepts that may have associations or overlaps, prioritize merging explanations; if merging makes the statement unclear, list them separately.
+# The user's chat history may not strictly follow a knowledge framework, but you should identify the hierarchical relationships between topics in the text and then summarize them into a tree structure. Creating new subtopics should always be the last resort. The returned text should be structured in a depth-first manner rather than breadth-first.
+#There's only one main subject for all content.
 [MOST IMPORTANT]Ensure that every line of text starts with "#" and pay special attention to the last level of text, which must also start with "#" (more than the previous level text by one "#").
 
 
 #####IMPORTANT:only mark "#" is okay,you are not allow to use any mark except"#"(e.g. *, **, -, *, 1., >, `, ```, ![], [] are strictly prohibited.)
 #####You can only use "#" and each row must contain "#"!
+
 
 
 #Output Example:
