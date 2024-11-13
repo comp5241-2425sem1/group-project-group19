@@ -1,13 +1,11 @@
 import requests, json, os, toml
-import streamlit as st
  # Load API key from credentials.txt
 current_dir = os.path.dirname(__file__)
 file_path = os.path.join(current_dir, 'credentials')
 if os.path.exists(file_path):
     with open(file_path, 'r') as f:
         secrets = toml.load(f)
-else:
-    secrets =st.secrets
+
 OPENROUTER_API_KEY =secrets['OPENROUTER']['OPENROUTER_API_KEY']
 def answer(system_prompt, user_prompt): 
     msg= [

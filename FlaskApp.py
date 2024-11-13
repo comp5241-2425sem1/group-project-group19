@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request,render_template
 from mindmap import Conversation2Markdown as c2m
 from chatLLM.chatbot import ChatBot
 class content():
@@ -10,6 +10,12 @@ class content():
 app = Flask(__name__)
 bot = ChatBot("","","")
 c1=content()
+
+@app.route('/')
+def serve_index():
+    return render_template('index.html')
+
+
 @app.route('/get_result', methods=['GET'])
 def get_result():
     history = bot.get_chat_history()

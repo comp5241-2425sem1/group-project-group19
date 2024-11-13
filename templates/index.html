@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat and Mindmap</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Career Compass AI</title>
+    <link rel="stylesheet" href="static/style.css">
     <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/3.0.13/go.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -22,8 +22,8 @@
     <div id="profileModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>个人信息</h2>
-            <img id="displayAvatar" src="asset/profile-icon.png" alt="头像" width="100">
+            <h2>Profile</h2>
+            <img id="displayAvatar" src="static/asset/profile-icon.png" alt="Avatar" width="100">
             <p id="displayUsername">Nickname：默认用户名</p>
             <button onclick="openEditModal()">修改个人信息</button>
         </div>
@@ -51,12 +51,12 @@
 
     <div class="sidebar">
         <!-- 其他页面接入位置 -->
-        <img src="asset/home-icon.png" alt="Home" id="welcome-button">
-        <img src="asset/chat-icon.png" alt="Chat" id="chat-button">
-        <img src="asset/document-icon.png" alt="Documents" id="file-button">
+        <img src="static/asset/home-icon.png" alt="Home" id="welcome-button">
+        <img src="static/asset/chat-icon.png" alt="Chat" id="chat-button">
+        <img src="static/asset/document-icon.png" alt="Documents" id="file-button">
         <!-- 用户资料框 -->
         <div class="profile" onclick="openProfileModal()">
-            <img src="asset/profile-icon.png" id="sidebarAvatar" alt="Profile" class="profile-img">
+            <img src="static/asset/profile-icon.png" id="sidebarAvatar" alt="Profile" class="profile-img">
             <p class="profile-username" id="sidebarUsername">Username</p>
         </div>
 
@@ -73,9 +73,9 @@
             </div>
 
             <div class="input-group">
-                <label for="topic">What aspect of job seeking would you like to learn about?</label>
+                <label for="topic">What aspect of topic would you like to learn about?</label>
                 <input type="text" id="topic"
-                    placeholder="E.g., interview preparation, salary negotiation, resume writing...">
+                    placeholder="E.g., Front-End Engineer, Data Scientist...">
             </div>
 
             <div class="input-group">
@@ -124,8 +124,8 @@
                                 alt="GPT">
                         </div>
                         <div class="message-content">
-                            <div class="sender-info">GPT Assistant • 10:00</div>
-                            <div class="message-bubble">你好！我是AI助手，很高兴为你服务。</div>
+                            <div class="sender-info">GPT Assistant</div>
+                            <div class="message-bubble">Hi! If you're ready, tell me "start".</div>
                         </div>
                     </div>
                 </div>
@@ -134,9 +134,9 @@
                 <div class="input-box" id="inputBox" contenteditable="true"></div>
                 <div class="button-group">
                     <button class="attach-btn" id="attachButton">
-                        附件
+                        File
                     </button>
-                    <button class="send-btn" id="sendButton">发送</button>
+                    <button class="send-btn" id="sendButton">Send</button>
                 </div>
             </div>
         </div>
@@ -154,7 +154,7 @@
                 <button class="control-button" id="saveButton">Save as png</button>
                 <button class="control-button" id="refresh">Refresh Mindmap</button>
                 <button class="control-button" id="toggleSummaryButton">
-                    <img src="asset/AI.png" alt="Toggle Summary" style="height:20px;padding: 0px;">
+                    <img src="static/asset/AI.png" alt="Toggle Summary" style="height:20px;padding: 0px;">
                 </button>
             </div>
             <div class="summary-float minimized">
@@ -170,14 +170,14 @@
     </div>
     <div class="file-content hide">
 
-        <h1>文件上传</h1>
+        <h1>Upload Files</h1>
         <table class="file-list">
             <thead>
                 <tr>
-                    <th>文件图标</th>
-                    <th>文件名</th>
-                    <th>上传时间</th>
-                    <th>操作</th>
+                    <th>Icon</th>
+                    <th>Name</th>
+                    <th>Upload Time</th>
+                    <th>Operation</th>
                 </tr>
             </thead>
             <tbody id="fileTableBody">
@@ -188,7 +188,7 @@
                     <td colspan="4">
                         <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx"
                             onchange="handleFileUpload(event)">
-                        <label for="fileInput">上传文件</label>
+                        <label for="fileInput">Upload File</label>
                     </td>
                 </tr>
             </tfoot>
@@ -197,7 +197,7 @@
 
 
 
-    <script src="script.js"></script>
+    <script src="static/script.js"></script>
 </body>
 
 </html>
