@@ -790,3 +790,36 @@ button:active {
     gap: 10px; 
     display: flex;
 }
+
+/* pop up */
+.file-popup {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+}
+
+.file-popup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-popup li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-popup li input[type="checkbox"] {
+    margin-right: 10px;
+}

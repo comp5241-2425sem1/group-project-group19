@@ -335,9 +335,7 @@ inputBox.addEventListener('keydown', (e) => {
     }
 });
 
-attachButton.addEventListener('click', () => {
-    alert('附件功能待实现');
-});
+
 
 inputBox.addEventListener('input', () => {
     sendButton.disabled = !inputBox.textContent.trim();
@@ -441,51 +439,6 @@ welcomebutton.addEventListener('click', function () {
 
 
 
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const fileTableBody = document.getElementById('fileTableBody');
-        const newRow = document.createElement('tr');
-
-        const fileIconCell = document.createElement('td');
-        const fileIcon = document.createElement('img');
-        fileIcon.className = 'file-icon';
-        fileIcon.src = getFileIcon(file.name);
-        fileIconCell.appendChild(fileIcon);
-
-        const fileNameCell = document.createElement('td');
-        fileNameCell.textContent = file.name;
-
-        const uploadTimeCell = document.createElement('td');
-        uploadTimeCell.textContent = new Date().toLocaleString();
-
-        const editButtonsCell = document.createElement('td');
-        editButtonsCell.className = 'edit-buttons';
-        const renameButton = document.createElement('button');
-        renameButton.textContent = 'Rename';
-        renameButton.className = 'file-button';
-        renameButton.onclick = () => renameFile(fileNameCell);
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.className = 'file-button';
-        deleteButton.onclick = () => deleteFile(newRow);
-        const downloadButton = document.createElement('button');
-        downloadButton.textContent = 'Download';
-        downloadButton.className = 'file-button';
-        downloadButton.onclick = () => downloadFile(file);
-        editButtonsCell.appendChild(renameButton);
-        editButtonsCell.appendChild(deleteButton);
-        editButtonsCell.appendChild(downloadButton);
-
-        newRow.appendChild(fileIconCell);
-        newRow.appendChild(fileNameCell);
-        newRow.appendChild(uploadTimeCell);
-        newRow.appendChild(editButtonsCell);
-
-        fileTableBody.appendChild(newRow);
-    }
-}
-
 function getFileIcon(fileName) {
     const extension = fileName.split('.').pop().toLowerCase();
     switch (extension) {
@@ -568,5 +521,130 @@ inputs.forEach(input => {
 
     input.addEventListener('blur', function() {
         this.style.transform = 'scale(1)';
+    });
+});
+
+
+
+//select file
+document.addEventListener('DOMContentLoaded', () => {
+    const attachButton = document.getElementById('attachButton');
+    const filePopup = document.getElementById('filePopup');
+    const uploadedFilesList = document.getElementById('uploadedFilesList');
+    const confirmButton = document.getElementById('confirmButton');
+    const fileTableBody = document.getElementById('fileTableBody');
+
+    let uploadedFiles = [];
+
+    // 处理文件上传
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            uploadedFiles.push(file);
+            const newRow = document.createElement('tr');
+
+            const fileIconCell = document.createElement('td');
+            const fileIcon = document.createElement('img');
+            fileIcon.className = 'file-icon';
+            fileIcon.src = getFileIcon(file.name);
+            fileIconCell.appendChild(fileIcon);
+
+            const fileNameCell = document.createElement('td');
+            fileNameCell.textContent = file.name;
+
+            const uploadTimeCell = document.createElement('td');
+            uploadTimeCell.textContent = new Date().toLocaleString();
+
+            const editButtonsCell = document.createElement('td');
+            editButtonsCell.className = 'edit-buttons';
+            const renameButton = document.createElement('button');
+            renameButton.textContent = 'Rename';
+            renameButton.className = 'file-button';
+            renameButton.onclick = () => renameFile(fileNameCell);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'file-button';
+            deleteButton.onclick = () => deleteFile(newRow);
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Download';
+            downloadButton.className = 'file-button';
+            downloadButton.onclick = () => downloadFile(file);
+            editButtonsCell.appendChild(renameButton);
+            editButtonsCell.appendChild(deleteButton);
+            editButtonsCell.appendChild(downloadButton);
+
+            newRow.appendChild(fileIconCell);
+            newRow.appendChild(fileNameCell);
+            newRow.appendChild(uploadTimeCell);
+            newRow.appendChild(editButtonsCell);
+
+            fileTableBody.appendChild(newRow);
+        }
+    }
+
+    document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+
+    attachButton.addEventListener('click', () => {
+        // 显示小窗口
+        filePopup.style.display = 'block';
+        const rect = attachButton.getBoundingClientRect();
+        filePopup.style.top = `${rect.top + window.scrollY - filePopup.offsetHeight}px`; // 在按钮上方弹出
+        filePopup.style.left = `${rect.left + window.scrollX}px`;
+
+        // 清空已上传文件列表
+        uploadedFilesList.innerHTML = '';
+
+        // 添加已上传文件到列表
+        uploadedFiles.forEach(file => {
+            const listItem = document.createElement('li');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = file.name;
+            listItem.appendChild(checkbox);
+            listItem.appendChild(document.createTextNode(file.name));
+            uploadedFilesList.appendChild(listItem);
+        });
+    });
+
+    confirmButton.addEventListener('click', () => {
+        // 获取选中的文件
+        const selectedFiles = [];
+        const checkboxes = uploadedFilesList.querySelectorAll('input[type="checkbox"]:checked');
+        checkboxes.forEach(checkbox => {
+            const file = uploadedFiles.find(f => f.name === checkbox.value);
+            if (file) {
+                selectedFiles.push(file);
+            }
+        });
+
+        // 创建 FormData 对象
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+            formData.append('files', file);
+        });
+
+        // 发送选中的文件到 Flask 后端
+        fetch('/upload_selected_files', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Files uploaded:', data);
+            // 处理后端返回的数据
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        // 隐藏小窗口
+        filePopup.style.display = 'none';
+    });
+
+    // 点击窗口外部时隐藏小窗口
+    window.addEventListener('click', (event) => {
+        if (!filePopup.contains(event.target) && event.target !== attachButton) {
+            filePopup.style.display = 'none';
+        }
     });
 });

@@ -68,3 +68,23 @@ def start_chat():
         'jobDescription': jd,
         'experienceLevel': level
     })
+
+
+
+@app.route('/upload_selected_files', methods=['POST'])
+def upload_selected_files():
+    files = request.files.getlist('files')
+    file_contents = []
+    
+    # 处理选中的文件
+    for file in files:
+        filename = file.filename
+        content = file.read().decode('utf-8')
+        file_contents.append(content)
+        print(f"File {filename} content: {content[:100]}...")  # 打印前100个字符
+    
+    # 将文件内容存储在 ChatBot 实例中
+    bot.file_contents = file_contents
+    
+    # 返回响应
+    return jsonify({'message': 'Files received', 'files': [file.filename for file in files]})

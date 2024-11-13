@@ -9,12 +9,14 @@ class ChatBot:
         self.topic = topic
         self.jobDescription = jobDescription
         self.experienceLevel = experienceLevel
+        self.file_contents = []  # 添加一个属性来存储文件内容
 
     def clear_history(self):
         """Clear the chat history and reset user question and response."""
         self.chat_history = []
         self.user_question = ""
         self.response = ""
+        self.file_contents = []  # 清除文件内容
 
     def add_user_question(self, question):
         """Add a user question to the chat history."""
@@ -28,7 +30,7 @@ class ChatBot:
 
         system_prompt = self.load_system_prompt()
 
-        user_prompt = f"User question:\n{self.user_question}"
+        user_prompt = f"User question:\n{self.user_question}\n\n***File contents:***\n{self.get_file_contents()}"
 
         self.response = llm.answer(system_prompt, user_prompt)
         self.chat_history.append(f"AI: {self.response}")
@@ -50,6 +52,10 @@ class ChatBot:
         )
 
         return system_prompt
+
+    def get_file_contents(self):
+        """Return the concatenated file contents."""
+        return "\n".join(self.file_contents)
 
     def get_chat_history(self):
         """Return the chat history."""
