@@ -24,25 +24,25 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Profile</h2>
             <img id="displayAvatar" src="static/asset/profile-icon.png" alt="Avatar" width="100">
-            <p id="displayUsername">Nickname：默认用户名</p>
-            <button onclick="openEditModal()">修改个人信息</button>
+            <p id="displayUsername">Nickname:Default</p>
+            <button onclick="openEditModal()">Edit Profile</button>
         </div>
     </div>
 
     <div id="editModal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2>修改个人信息</h2>
+            <h2>Edit Profile</h2>
             <div>
-                <label for="username">用户名:</label>
+                <label for="username">Username:</label>
                 <input type="text" id="username" name="username">
             </div>
             <div>
-                <label for="avatar">上传头像:</label>
+                <label for="avatar">Avatar:</label>
                 <input type="file" id="avatar" name="avatar" accept="image/*">
             </div>
             <div>
-                <button id="saveProfile">保存</button>
+                <button id="saveProfile">Save</button>
             </div>
         </div>
     </div>

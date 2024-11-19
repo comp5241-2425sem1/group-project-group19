@@ -393,6 +393,9 @@ saveProfileButton.onclick = function() {
     // 关闭弹窗
     editModal.style.display = "none";
 }
+var username = "Username";
+var displayUsername = document.getElementById("displayUsername");
+displayUsername.innerText = "Nickname:" + username;
 
 // 点击其他地方关闭弹窗
 window.onclick = function(event) {
@@ -455,14 +458,14 @@ function getFileIcon(fileName) {
 }
 
 function renameFile(fileNameCell) {
-    const newName = prompt('请输入新的文件名:', fileNameCell.textContent);
+    const newName = prompt('New Filename:', fileNameCell.textContent);
     if (newName) {
         fileNameCell.textContent = newName;
     }
 }
 
 function deleteFile(row) {
-    if (confirm('确定要删除这个文件吗?')) {
+    if (confirm('Confirm Delete?')) {
         row.remove();
     }
 }
